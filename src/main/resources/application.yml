@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: qna-knowledge-base
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# 通义千问 — ChatModel 由 langchain4j-spring-boot-starter 自动配置
+langchain4j:
+  dashscope:
+    api-key: ${DASHSCOPE_API_KEY}
+    streaming-chat-model:
+      model-name: qwen-plus
+      temperature: 0.3
+    chat-model:
+      model-name: qwen-plus
+      temperature: 0.3
+      max-tokens: 2048
+
+# 文档切分
+document:
+  chunk:
+    max-segment-size: 500
+    max-overlap-size: 50
+
+# 检索参数
+rag:
+  retrieval:
+    top-k: 5
+    min-score: 0.6
+
+logging:
+  level:
+    com.example.kb: DEBUG
