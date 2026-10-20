@@ -41,6 +41,6 @@ public class DocumentController {
     @DeleteMapping("/{docId}")
     public ResponseEntity<?> delete(@PathVariable String docId) {
         documentService.remove(docId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("success", true, "message", "deleted"));
     }
 }

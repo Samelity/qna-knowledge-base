@@ -8,6 +8,11 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+  datasource:
+    url: jdbc:postgresql://localhost:5432/kbvector
+    username: postgres
+    password: ${PG_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
 # 通义千问 — ChatModel 由 langchain4j-spring-boot-starter 自动配置
 langchain4j:
@@ -36,3 +41,12 @@ rag:
 logging:
   level:
     com.example.kb: DEBUG
+
+vector:
+  pg:
+    host: localhost
+    port: 5432
+    database: kbvector
+    username: postgres
+    password: ${PG_PASSWORD}
+    table-name: document_embedding
