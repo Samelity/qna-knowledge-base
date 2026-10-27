@@ -55,8 +55,8 @@
         <div class="hd">文档管理</div>
         <div class="upload-area" id="dropZone">
             <p>拖拽文件到此处，或点击选择</p>
-            <p style="font-size:12px;color:#bfbfbf;margin-top:4px">支持 pdf / docx / txt / md</p>
-            <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md" multiple>
+            <p style="font-size:12px;color:#bfbfbf;margin-top:4px">支持 pdf / docx / xlsx / xls / pptx / ppt / txt / md</p>
+            <input type="file" id="fileInput" accept=".pdf,.docx,.xlsx,.xls,.pptx,.ppt,.txt,.md" multiple>
         </div>
         <div class="progress" id="prog">
             <div class="bar" id="progBar"></div>
@@ -75,7 +75,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-    // ========== 配置区：改成你的后端地址 ==========
+    // ========== 配置区：后端地址 ==========
     const API = "http://localhost:8080";
     // ============================================
 
@@ -100,7 +100,7 @@
 
     function upload(file){
       const ext=file.name.split('.').pop().toLowerCase();
-      if(!['pdf','docx','txt','md'].includes(ext)){toast('不支持的文件类型');return}
+      if(!['pdf','docx','xlsx','xls','pptx','ppt','txt','md'].includes(ext)){toast('不支持的文件类型');return}
       const fd=new FormData();fd.append('file',file);
       const xhr=new XMLHttpRequest();
       const prog=document.getElementById('prog'),bar=document.getElementById('progBar');

@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BusinessException.class)
     public Map<String, String> handleBusinessException(BusinessException e, HttpServletRequest request) {
-        // 警告日志会进入 kb-info.log 还是 kb-error.log 取决于你的 logback 配置
+        // 警告日志会进入 kb-info.log 还是 kb-error.log 取决于 logback 配置
         // 这里我们用 warn 打印到控制台，并附带请求上下文
         log.warn("业务异常 [{}], IP: {}, 路径: {}, 错误信息: {}",
                 request.getMethod() + " " + request.getRequestURI(),

@@ -3,7 +3,7 @@
     <!-- 定义项目日志存放的相对路径 -->
     <property name="LOG_HOME" value="./logs" />
 
-    <!-- 1. 控制台输出 (你原本的控制台日志保持不变) -->
+    <!-- 1. 控制台输出 (原本的控制台日志保持不变) -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <charset>UTF-8</charset>
