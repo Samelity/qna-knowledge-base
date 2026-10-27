@@ -6,7 +6,7 @@ Content-Type: multipart/form-data; boundary=boundary
 Content-Disposition: form-data; name="file"; filename="test.pdf"
 Content-Type: application/pdf
 
-< 你的PDF文件绝对路径 >
+< PDF文件绝对路径 >
 --boundary--
 
 ### 2. 查看已索引文档
@@ -17,7 +17,7 @@ POST http://localhost:8080/api/chat
 Content-Type: application/json
 
 {
-  "question": "根据你上传的文档内容提一个问题"
+  "question": "根据上传的文档内容提一个问题"
 }
 
 ### 4. 问一个文档里没有的问题（验证"未找到"逻辑）
