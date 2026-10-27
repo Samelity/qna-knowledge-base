@@ -9,12 +9,12 @@
 - **大模型**: 通义千问 (qwen-plus)
 - **向量模型**: text-embedding-v2
 - **向量数据库**: PostgreSQL + PGVector
-- **文档解析**: Apache PDFBox (PDF) + Apache POI (DOCX)
+- **文档解析**: Apache PDFBox (PDF) + Apache POI (DOCX / Excel / PPT)
 - **构建工具**: Maven
 
 ## 功能特性
 
-- **文档管理**: 支持上传 PDF、DOCX、TXT、MD 格式
+- **文档管理**: 支持上传 PDF、DOCX、Excel（XLSX/XLS）、PPT（PPTX/PPT）、TXT、MD 格式
 - **智能切片**: 自动将文档切分为片段，支持重叠窗口
 - **向量检索**: 基于语义相似度的智能检索
 - **条款查询优化**: 自动识别"第X条"等条款编号，扩大召回量并二次过滤
@@ -229,7 +229,7 @@ qna-knowledge-base/
 ### 文档摄取流程
 1. 上传文件 → 大小和格式校验
 2. 文件落盘（UUID 命名，避免中文/特殊字符问题）
-3. 解析文档内容（PDF/DOCX/TXT）
+3. 解析文档内容（PDF/DOCX/Excel/PPT/TXT/MD）
 4. 智能切片（按字符数切分，支持重叠）
 5. 向量化切片（调用 Embedding 模型）
 6. 存入 PGVector 向量数据库
@@ -275,7 +275,7 @@ Token 消耗日志格式：
 
 ## 开发计划
 
-- [ ] 支持更多文档格式（Excel、PPT）
+- [x] 支持更多文档格式（Excel、PPT）
 - [ ] 添加文档预览功能
 - [ ] 支持多轮对话
 - [ ] 知识库分类管理

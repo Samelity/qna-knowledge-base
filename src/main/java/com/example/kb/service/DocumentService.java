@@ -4,6 +4,7 @@ import com.example.kb.exception.BusinessException;
 import com.example.kb.model.DocumentEntity;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.langchain4j.data.document.BlankDocumentException;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
@@ -58,7 +59,8 @@ public class DocumentService {
 
     private static final String TABLE = "document_meta";
 
-    private static final Set<String> ALLOWED_EXT = Set.of("pdf", "docx", "txt", "md");
+    private static final Set<String> ALLOWED_EXT =
+            Set.of("pdf", "docx", "xlsx", "xls", "pptx", "ppt", "txt", "md");
 
     @Value("${document.chunk.max-segment-size:500}")
     private int maxSegmentSize;
@@ -166,7 +168,8 @@ public class DocumentService {
         String base = basename(originalName).toLowerCase();
         int dot = base.lastIndexOf('.');
         if (dot < 0 || dot == base.length() - 1) {
-            throw new BusinessException("UNSUPPORTED_TYPE", "无法识别文件类型，请上传 pdf/docx/txt/md");
+            throw new BusinessException("UNSUPPORTED_TYPE",
+                    "无法识别文件类型，请上传 pdf/docx/xlsx/xls/pptx/ppt/txt/md");
         }
         String ext = base.substring(dot + 1);
         if ("doc".equals(ext)) {
@@ -217,13 +220,22 @@ public class DocumentService {
     }
 
     private Document parseDocument(Path path, String ext) {
-        return switch (ext) {
-            case "pdf" -> FileSystemDocumentLoader.loadDocument(path, new ApachePdfBoxDocumentParser());
-            case "docx" -> FileSystemDocumentLoader.loadDocument(path, new ApachePoiDocumentParser());
-            default ->
-                // 显式 UTF-8，避免 GBK 等编码的 txt 乱码
-                    FileSystemDocumentLoader.loadDocument(path, new TextDocumentParser(StandardCharsets.UTF_8));
-        };
+        try {
+            return switch (ext) {
+                case "pdf" -> FileSystemDocumentLoader.loadDocument(path, new ApachePdfBoxDocumentParser());
+                // POI 经 ExtractorFactory 统一处理 docx / xlsx / xls / pptx / ppt
+                case "docx", "xlsx", "xls", "pptx", "ppt" ->
+                        FileSystemDocumentLoader.loadDocument(path, new ApachePoiDocumentParser());
+                default ->
+                    // 显式 UTF-8，避免 GBK 等编码的 txt 乱码
+                        FileSystemDocumentLoader.loadDocument(path, new TextDocumentParser(StandardCharsets.UTF_8));
+            };
+        } catch (BlankDocumentException e) {
+            throw new BusinessException("EMPTY_CONTENT", "文档无可解析文本，可能是空文件或扫描图片型文档");
+        } catch (RuntimeException e) {
+            throw new BusinessException("PARSE_FAILED",
+                    "文档解析失败，请确认文件未损坏或未加密: " + e.getMessage(), e);
+        }
     }
 
     private List<TextSegment> split(Document document, String docId) {
