@@ -286,6 +286,35 @@ public class DocumentService {
     }
 
     /**
+     * 重新解析落盘的原始文件并返回纯文本，供 Office 等无法原生渲染的格式做预览。
+     */
+    public String extractText(String docId) {
+        DocumentEntity meta = getDocument(docId);
+        Document document = parseDocument(resolveFile(meta), meta.getFileType());
+        String text = document.text();
+        if (text == null || text.isBlank()) {
+            throw new BusinessException("EMPTY_CONTENT", "文档无可解析文本");
+        }
+        return text;
+    }
+
+    /**
+     * 定位文档的落盘文件；归一化后校验仍在 upload 目录内，防止目录穿越。
+     */
+    public Path resolveFile(DocumentEntity meta) {
+        String storedFileName = meta.getStoredFileName();
+        if (storedFileName == null || storedFileName.isBlank()) {
+            throw new BusinessException("FILE_MISSING", "文档原文件不存在");
+        }
+        Path base = Path.of(uploadDir).toAbsolutePath().normalize();
+        Path file = base.resolve(storedFileName).normalize();
+        if (!file.startsWith(base) || !Files.isRegularFile(file)) {
+            throw new BusinessException("FILE_MISSING", "文档原文件不存在或已被删除");
+        }
+        return file;
+    }
+
+    /**
      * 删除文档：按库中记录的向量 ID 精确删除 PGVector 中的向量 -> 删物理文件 -> 删数据库行。
      * 这是 PGVector 相对 InMemoryEmbeddingStore 的核心收益：向量终于可以真正删掉了。
      */

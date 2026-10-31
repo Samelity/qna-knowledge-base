@@ -15,6 +15,7 @@
 ## 功能特性
 
 - **文档管理**: 支持上传 PDF、DOCX、Excel（XLSX/XLS）、PPT（PPTX/PPT）、TXT、MD 格式
+- **文档预览**: 点击文档列表即可预览，PDF 原生内嵌，其他格式展示提取文本，支持下载原文件
 - **智能切片**: 自动将文档切分为片段，支持重叠窗口
 - **向量检索**: 基于语义相似度的智能检索
 - **条款查询优化**: 自动识别"第X条"等条款编号，扩大召回量并二次过滤
@@ -168,6 +169,20 @@ DELETE /api/documents/{docId}
 }
 ```
 
+#### 预览原文件
+```http
+GET /api/documents/{docId}/file?download=false
+```
+
+默认 `inline` 返回原文件（PDF 可由浏览器直接内嵌预览），`download=true` 时作为附件下载。
+
+#### 获取提取文本
+```http
+GET /api/documents/{docId}/text
+```
+
+返回 `text/plain;charset=UTF-8`，用于 TXT/MD 与浏览器无法直接渲染的 Office 文档做文本预览。
+
 ### 问答接口
 
 #### 提问
@@ -276,7 +291,7 @@ Token 消耗日志格式：
 ## 开发计划
 
 - [x] 支持更多文档格式（Excel、PPT）
-- [ ] 添加文档预览功能
+- [x] 添加文档预览功能
 - [ ] 支持多轮对话
 - [ ] 知识库分类管理
 - [ ] 用户权限控制
