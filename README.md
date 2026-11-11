@@ -10,6 +10,7 @@
 - **向量模型**: text-embedding-v2
 - **向量数据库**: PostgreSQL + PGVector
 - **文档解析**: Apache PDFBox (PDF) + Apache POI (DOCX / Excel / PPT)
+- **MCP**: MCP Java SDK 2.1.0（Streamable HTTP）
 - **构建工具**: Maven
 
 ## 功能特性
@@ -22,6 +23,7 @@
 - **问答生成**: 基于检索结果生成带来源引用的答案
 - **Token 统计**: 自动记录每次问答的 Token 消耗
 - **Web 界面**: 提供简洁的文档管理和问答交互界面
+- **MCP Server**: 通过 Streamable HTTP 把知识库问答与检索暴露为 MCP tool，供 Claude Desktop / Qoder 等客户端调用
 - **日志管理**: 分级日志输出（INFO/ERROR），支持按天归档
 
 ## 前置要求
@@ -116,6 +118,11 @@ vector:
     username: postgres
     password: ${PG_PASSWORD}
     table-name: document_embedding
+
+# MCP Server（与 Web 共用 8080 端口）
+mcp:
+  enabled: true             # false 时不注册 /mcp，Web 模式不受影响
+  endpoint: /mcp
 ```
 
 ## API 接口
@@ -207,6 +214,28 @@ Content-Type: application/json
 }
 ```
 
+## MCP 接入
+
+应用启动后，MCP 端点为 `http://localhost:8080/mcp`（Streamable HTTP），提供两个只读 tool：
+
+- `knowledge_answer(question)`：基于知识库生成带来源的回答
+- `knowledge_search(query, topK?)`：语义检索原始文档片段
+
+客户端配置示例：
+
+```json
+{
+  "mcpServers": {
+    "qna-knowledge-base": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp"
+    }
+  }
+}
+```
+
+完整的协议流程、curl 验证示例与练习任务见 [docs/MCP练习说明.md](docs/MCP练习说明.md)。
+
 ## 项目结构
 
 ```
@@ -214,12 +243,16 @@ qna-knowledge-base/
 ├── src/main/java/com/example/kb/
 │   ├── KnowledgeBaseApplication.java    # 启动类
 │   ├── config/
-│   │   └── RagConfig.java               # RAG 核心配置
+│   │   ├── RagConfig.java               # RAG 核心配置
+│   │   └── McpServerConfig.java         # MCP Server / Servlet 注册
 │   ├── controller/
 │   │   ├── ChatController.java          # 问答接口
 │   │   └── DocumentController.java      # 文档管理接口
+│   ├── mcp/
+│   │   └── KbToolService.java           # MCP tool 定义
 │   ├── service/
 │   │   ├── ChatService.java             # 问答服务（RAG 流程）
+│   │   ├── SearchService.java           # 向量检索（Web / MCP 共用）
 │   │   └── DocumentService.java         # 文档摄取服务
 │   ├── model/
 │   │   └── DocumentEntity.java          # 文档元数据实体
@@ -292,6 +325,7 @@ Token 消耗日志格式：
 
 - [x] 支持更多文档格式（Excel、PPT）
 - [x] 添加文档预览功能
+- [x] MCP Server 接入（Streamable HTTP）
 - [ ] 支持多轮对话
 - [ ] 知识库分类管理
 - [ ] 用户权限控制
