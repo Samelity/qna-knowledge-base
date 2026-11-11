@@ -234,8 +234,6 @@ Content-Type: application/json
 }
 ```
 
-完整的协议流程、curl 验证示例与练习任务见 [docs/MCP练习说明.md](docs/MCP练习说明.md)。
-
 ## 项目结构
 
 ```
