@@ -38,6 +38,12 @@ rag:
     top-k: 5
     min-score: 0.6
 
+# MCP Server（Streamable HTTP）：与 Web 模式共用同一个 8080 端口
+# enabled=false 时不注册 /mcp，普通 Web 功能完全不受影响
+mcp:
+  enabled: true
+  endpoint: /mcp
+
 logging:
   level:
     com.example.kb: DEBUG
